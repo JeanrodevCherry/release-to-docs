@@ -1,0 +1,26 @@
+# Release Report: {{ release.tag_name }}
+
+## Summary
+- **Release Name**: {{ release.name or release.tag_name }}
+- **Release Date**: {{ release.released_at or release.created_at }}
+- **Total Issues**: {{ release.issues | length }}
+
+## Issues by Type
+
+### Bugs
+{% for issue in grouped_issues.bug %}
+- #{{ issue.id }}: {{ issue.title }} ({{ issue.state }}) - Assignee: {{ issue.assignee or 'Unassigned' }}
+{% endfor %}
+
+### Features
+{% for issue in grouped_issues.feature %}
+- #{{ issue.id }}: {{ issue.title }} ({{ issue.state }}) - Assignee: {{ issue.assignee or 'Unassigned' }}
+{% endfor %}
+
+### Tasks
+{% for issue in grouped_issues.task %}
+- #{{ issue.id }}: {{ issue.title }} ({{ issue.state }}) - Assignee: {{ issue.assignee or 'Unassigned' }}
+{% endfor %}
+
+## Release Description
+{{ release.description or 'No description provided' }}

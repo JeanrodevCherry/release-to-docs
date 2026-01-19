@@ -1,0 +1,20 @@
+gitlab:
+  api_url: "https://gitlab.com/api/v4"
+  project_id: 42324438  # Replace with your project ID
+  token: "${GITLAB_TOKEN}"  # Use environment variable
+  retries: 3
+  timeout: 30.0
+
+report:
+  output_dir: "output"
+  formats: ["pdf", "excel", "markdown"]
+  templates:
+    markdown: "src/templates/report.md.j2"
+    pdf: "src/templates/report.html.j2"
+
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+
+prometheus:
+  port: 8000
