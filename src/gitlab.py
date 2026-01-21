@@ -66,7 +66,10 @@ class GitLabClient:
     async def get_commits_for_tag(self, tag_name: str) -> List[Dict[str, Any]]:
         # Fallback method to get commits for a tag when no previous release exists
         url = f"{self.api_url}/projects/{self.project_id}/repository/commits"
-        params = {"ref_name": tag_name, "per_page": 100}  # Limit to 100 commits for now
+        params = {
+            "ref_name": tag_name,
+            "per_page": "100"  # Limit to 100 commits for now
+        }
         logger.info(f"Fetching commits for tag {tag_name} from {url}")
         response = await self.client.get(url, params=params)
         response.raise_for_status()
