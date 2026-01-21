@@ -1,6 +1,6 @@
 # GitLab Release Reporter
 
-[![CI](https://github.com/jpeiteado/release-to-docs/workflows/CI/CD%20Pipeline/badge.svg)](https://github.com/jpeiteado/release-to-docs/actions)
+[![CI](https://github.com/jpeiteado/release-to-docs/workflows/CI/CD%20Pipeline/badge.svg)](https://github.com/JeanrodevCherry/release-to-docs/actions)
 [![codecov](https://codecov.io/gh/jpeiteado/release-to-docs/branch/main/graph/badge.svg)](https://codecov.io/gh/jpeiteado/release-to-docs)
 [![Python Version](https://img.shields.io/badge/python-3.11+-blue.svg)](https://python.org)
 [![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=flat&logo=docker&logoColor=white)](https://docker.com)

@@ -6,9 +6,9 @@ updates:
       interval: "weekly"
     open-pull-requests-limit: 10
     reviewers:
-      - "jpeiteado"
+      - "JeanrodevCherry"
     assignees:
-      - "jpeiteado"
+      - "JeanrodevCherry"
     commit-message:
       prefix: "deps"
       include: "scope"
