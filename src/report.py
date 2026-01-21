@@ -38,6 +38,7 @@ class ReportGenerator:
     def generate_excel(self, release: Release) -> str:
         data = []
         for issue in release.issues:
+            mr_titles = [mr.title for mr in issue.merge_requests]
             data.append(
                 {
                     "ID": issue.id,
@@ -46,6 +47,7 @@ class ReportGenerator:
                     "Labels": ", ".join(issue.labels),
                     "Assignee": issue.assignee or "Unassigned",
                     "Description": issue.description or "",
+                    "Merge Requests": "; ".join(mr_titles),
                     "Created At": issue.created_at.replace(tzinfo=None),
                     "Updated At": issue.updated_at.replace(tzinfo=None),
                 }
@@ -105,6 +107,12 @@ class ReportGenerator:
                     if issue.description:
                         story.append(Paragraph("Description:", heading_style))
                         story.append(Paragraph(issue.description, normal_style))
+                    if issue.merge_requests:
+                        story.append(Paragraph("Related Merge Requests:", heading_style))
+                        for mr in issue.merge_requests:
+                            story.append(Paragraph(f"!{mr.id}: {mr.title} ({mr.state}) - Merged: {mr.merged_at or 'Not merged'}", normal_style))
+                            if mr.description:
+                                story.append(Paragraph(mr.description, normal_style))
                     story.append(Spacer(1, 6))
                 story.append(Spacer(1, 12))
 

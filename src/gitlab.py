@@ -3,7 +3,7 @@ import re
 from tenacity import retry, stop_after_attempt, wait_exponential
 from typing import List, Dict, Any
 from loguru import logger
-from .models import Issue, Release
+from .models import Issue, Release, MergeRequest
 
 
 class GitLabClient:
@@ -37,6 +37,16 @@ class GitLabClient:
         response.raise_for_status()
         return response.json()
 
+    @retry(
+        stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10)
+    )
+    async def get_related_merge_requests(self, issue_id: int) -> List[Dict[str, Any]]:
+        url = f"{self.api_url}/projects/{self.project_id}/issues/{issue_id}/related_merge_requests"
+        logger.info(f"Fetching related MRs for issue #{issue_id} from {url}")
+        response = await self.client.get(url)
+        response.raise_for_status()
+        return response.json()
+
     def extract_issue_ids(self, description: str) -> List[int]:
         """Extract issue IDs from release description using regex."""
         pattern = r"#(\d+)"
@@ -50,24 +60,20 @@ class GitLabClient:
         for issue_id in issue_ids:
             try:
                 issue_data = await self.get_issue(issue_id)
-                # Fetch related MRs and their commits
-                commits = []
-                try:
-                    mrs = await self.get_related_merge_requests(issue_id)
-                    for mr in mrs:
-                        mr_commits = await self.get_merge_request_commits(mr["iid"])
-                        for commit_data in mr_commits:
-                            commit = Commit(
-                                id=commit_data["id"],
-                                title=commit_data["title"],
-                                message=commit_data["message"],
-                                author_name=commit_data["author_name"],
-                                created_at=commit_data["created_at"],
-                            )
-                            commits.append(commit)
-                except Exception as e:
-                    logger.warning(f"Failed to fetch commits for issue #{issue_id}: {e}")
-
+                # Fetch related merge requests
+                mrs_data = await self.get_related_merge_requests(issue_id)
+                merge_requests = []
+                for mr_data in mrs_data:
+                    mr = MergeRequest(
+                        id=mr_data["id"],
+                        title=mr_data["title"],
+                        description=mr_data.get("description"),
+                        state=mr_data["state"],
+                        merged_at=mr_data.get("merged_at"),
+                        target_branch=mr_data["target_branch"],
+                        source_branch=mr_data["source_branch"],
+                    )
+                    merge_requests.append(mr)
                 issue = Issue(
                     id=issue_data["id"],
                     title=issue_data["title"],
@@ -81,7 +87,7 @@ class GitLabClient:
                     ),
                     created_at=issue_data["created_at"],
                     updated_at=issue_data["updated_at"],
-                    commits=commits,
+                    merge_requests=merge_requests,
                 )
                 issues.append(issue)
             except Exception as e:
@@ -95,18 +101,5 @@ class GitLabClient:
             issues=issues,
         )
 
-    @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10))
-    async def get_related_merge_requests(self, issue_id: int) -> List[Dict[str, Any]]:
-        url = f"{self.api_url}/projects/{self.project_id}/issues/{issue_id}/related_merge_requests"
-        logger.info(f"Fetching related MRs for issue #{issue_id} from {url}")
-        response = await self.client.get(url)
-        response.raise_for_status()
-        return response.json()
-
-    @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10))
-    async def get_merge_request_commits(self, mr_iid: int) -> List[Dict[str, Any]]:
-        url = f"{self.api_url}/projects/{self.project_id}/merge_requests/{mr_iid}/commits"
-        logger.info(f"Fetching commits for MR !{mr_iid} from {url}")
-        response = await self.client.get(url)
-        response.raise_for_status()
-        return response.json()
+    async def close(self) -> None:
+        await self.client.aclose()

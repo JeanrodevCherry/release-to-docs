@@ -3,12 +3,14 @@ from typing import List, Optional
 from datetime import datetime
 
 
-class Commit(BaseModel):
-    id: str
+class MergeRequest(BaseModel):
+    id: int
     title: str
-    message: str
-    author_name: str
-    created_at: datetime
+    description: Optional[str]
+    state: str
+    merged_at: Optional[datetime]
+    target_branch: str
+    source_branch: str
 
 
 class Issue(BaseModel):
@@ -20,7 +22,7 @@ class Issue(BaseModel):
     assignee: Optional[str]
     created_at: datetime
     updated_at: datetime
-    commits: List[Commit] = []
+    merge_requests: List[MergeRequest] = []
 
 
 class Release(BaseModel):

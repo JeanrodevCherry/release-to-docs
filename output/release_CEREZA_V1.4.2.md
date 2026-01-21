@@ -22,6 +22,20 @@
   Hook up the logfile to textstream and socket at the same time ?
   ```
   
+  
+  **Related Merge Requests:**
+  
+  - !442359471: Resolve "Can we post the log on a port through a socket ?" (merged) - Merged: 2025-12-22 15:22:14.898000+00:00
+    
+    ```
+    Closes #205
+
+
+Tested and validated, does not affect process, just another handler for the logger :rocket:
+    ```
+    
+  
+  
 
 - #177196053: Problem after 24H (closed) - Assignee: jean-robin peiteado
   
@@ -209,6 +223,30 @@ After 5 days, no more issues with fix
 
 Remove extensive logging and cleanup before merging on main
   ```
+  
+  
+  **Related Merge Requests:**
+  
+  - !433232814: Draft: Resolve "Problem after 24H" (closed) - Merged: Not merged
+    
+    ```
+    Closes #203
+
+- Logging all information on MFC whereabouts
+- detailing the exact IO between ControlTS and the MFC thread
+
+Expose the bug since we reproduced systematically.
+I will need help to run this modification on one of the machines at cherry: @nael.mokrane
+    ```
+    
+  
+  - !437142412: Resolve "Problem after 24H" (merged) - Merged: 2025-12-01 13:32:04.621000+00:00
+    
+    ```
+    Closes #203
+    ```
+    
+  
   
 
 

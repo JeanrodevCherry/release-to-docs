@@ -16,6 +16,17 @@
   {{ issue.description }}
   ```
   {% endif %}
+  {% if issue.merge_requests %}
+  **Related Merge Requests:**
+  {% for mr in issue.merge_requests %}
+  - !{{ mr.id }}: {{ mr.title }} ({{ mr.state }}) - Merged: {{ mr.merged_at or 'Not merged' }}
+    {% if mr.description %}
+    ```
+    {{ mr.description }}
+    ```
+    {% endif %}
+  {% endfor %}
+  {% endif %}
 {% endfor %}
 
 ### Features
@@ -27,6 +38,17 @@
   {{ issue.description }}
   ```
   {% endif %}
+  {% if issue.merge_requests %}
+  **Related Merge Requests:**
+  {% for mr in issue.merge_requests %}
+  - !{{ mr.id }}: {{ mr.title }} ({{ mr.state }}) - Merged: {{ mr.merged_at or 'Not merged' }}
+    {% if mr.description %}
+    ```
+    {{ mr.description }}
+    ```
+    {% endif %}
+  {% endfor %}
+  {% endif %}
 {% endfor %}
 
 ### Tasks
@@ -37,6 +59,17 @@
   ```
   {{ issue.description }}
   ```
+  {% endif %}
+  {% if issue.merge_requests %}
+  **Related Merge Requests:**
+  {% for mr in issue.merge_requests %}
+  - !{{ mr.id }}: {{ mr.title }} ({{ mr.state }}) - Merged: {{ mr.merged_at or 'Not merged' }}
+    {% if mr.description %}
+    ```
+    {{ mr.description }}
+    ```
+    {% endif %}
+  {% endfor %}
   {% endif %}
 {% endfor %}
 
