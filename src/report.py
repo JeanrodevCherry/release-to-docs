@@ -2,7 +2,7 @@ from typing import List
 from pathlib import Path
 from jinja2 import Environment, FileSystemLoader
 from reportlab.lib.pagesizes import letter
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib import colors
 import pandas as pd
@@ -61,7 +61,7 @@ class ReportGenerator:
         file_path = self.output_dir / f"release_{release.tag_name}.pdf"
         doc = SimpleDocTemplate(str(file_path), pagesize=letter)
         styles = getSampleStyleSheet()
-        
+
         # Custom styles
         title_style = ParagraphStyle(
             'Title',
@@ -78,7 +78,7 @@ class ReportGenerator:
             textColor=colors.darkblue
         )
         normal_style = styles['Normal']
-        
+
         story = []
 
         # Title
@@ -86,7 +86,10 @@ class ReportGenerator:
         story.append(Spacer(1, 12))
 
         # Summary
-        story.append(Paragraph(f"Release Date: {release.released_at or release.created_at}", heading_style))
+        story.append(Paragraph(
+            f"Release Date: {release.released_at or release.created_at}",
+            heading_style
+        ))
         story.append(Paragraph(f"Total Issues: {len(release.issues)}", normal_style))
         story.append(Spacer(1, 12))
 
@@ -103,14 +106,23 @@ class ReportGenerator:
             if issues:
                 story.append(Paragraph(f"{issue_type.capitalize()}s", heading_style))
                 for issue in issues:
-                    story.append(Paragraph(f"#{issue.id}: {issue.title} ({issue.state}) - Assignee: {issue.assignee or 'Unassigned'}", normal_style))
+                    story.append(Paragraph(
+                        f"#{issue.id}: {issue.title} ({issue.state}) - "
+                        f"Assignee: {issue.assignee or 'Unassigned'}",
+                        normal_style
+                    ))
                     if issue.description:
                         story.append(Paragraph("Description:", heading_style))
                         story.append(Paragraph(issue.description, normal_style))
                     if issue.merge_requests:
-                        story.append(Paragraph("Related Merge Requests:", heading_style))
+                        story.append(Paragraph(
+                            "Related Merge Requests:", heading_style))
                         for mr in issue.merge_requests:
-                            story.append(Paragraph(f"!{mr.id}: {mr.title} ({mr.state}) - Merged: {mr.merged_at or 'Not merged'}", normal_style))
+                            story.append(Paragraph(
+                                f"!{mr.id}: {mr.title} ({mr.state}) - "
+                                f"Merged: {mr.merged_at or 'Not merged'}",
+                                normal_style
+                            ))
                             if mr.description:
                                 story.append(Paragraph(mr.description, normal_style))
                     story.append(Spacer(1, 6))

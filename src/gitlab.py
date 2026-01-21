@@ -41,7 +41,10 @@ class GitLabClient:
         stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10)
     )
     async def get_related_merge_requests(self, issue_id: int) -> List[Dict[str, Any]]:
-        url = f"{self.api_url}/projects/{self.project_id}/issues/{issue_id}/related_merge_requests"
+        url = (
+            f"{self.api_url}/projects/{self.project_id}/issues/{issue_id}"
+            "/related_merge_requests"
+        )
         logger.info(f"Fetching related MRs for issue #{issue_id} from {url}")
         response = await self.client.get(url)
         response.raise_for_status()
@@ -84,7 +87,10 @@ class GitLabClient:
         stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10)
     )
     async def get_commit_diff(self, commit_sha: str) -> List[Dict[str, Any]]:
-        url = f"{self.api_url}/projects/{self.project_id}/repository/commits/{commit_sha}/diff"
+        url = (
+            f"{self.api_url}/projects/{self.project_id}/repository/commits/"
+            f"{commit_sha}/diff"
+        )
         logger.info(f"Fetching diff for commit {commit_sha} from {url}")
         response = await self.client.get(url)
         response.raise_for_status()
@@ -141,39 +147,51 @@ class GitLabClient:
         try:
             # Get all releases to find the previous one
             all_releases = await self.get_releases()
-            releases_sorted = sorted(all_releases, key=lambda r: r["created_at"], reverse=True)
-            
+            releases_sorted = sorted(
+                all_releases, key=lambda r: r["created_at"], reverse=True
+            )
+
             # Find current release and previous release
             current_release = None
             previous_release = None
-            
+
             for release in releases_sorted:
                 if release["tag_name"] == tag_name:
                     current_release = release
                     break
-            
+
             if current_release:
                 # Find the previous release (next one in the sorted list)
                 current_index = releases_sorted.index(current_release)
                 if current_index + 1 < len(releases_sorted):
                     previous_release = releases_sorted[current_index + 1]
-            
+
             if previous_release:
                 # Compare current release with previous release
-                compare_data = await self.compare_releases(previous_release["tag_name"], tag_name)
+                compare_data = await self.compare_releases(
+                    previous_release["tag_name"], tag_name
+                )
                 commits_data = compare_data.get("commits", [])
             else:
                 # If no previous release, get commits for current tag
                 commits_data = await self.get_commits_for_tag(tag_name)
-            
-            for commit_data in commits_data[:20]:  # Limit to first 20 commits for brevity
+
+            for commit_data in commits_data[:20]:  # Limit to first 20 commits
+                # for brevity
                 try:
                     diff_data = await self.get_commit_diff(commit_data["id"])
                     file_changes = []
                     for diff in diff_data:
                         # Only include text-based files
                         file_path = diff["new_path"]
-                        if any(file_path.endswith(ext) for ext in ['.py', '.md', '.txt', '.cpp', '.c', '.h', '.java', '.js', '.ts', '.html', '.css', '.yml', '.yaml', '.json', '.xml', '.sh', '.bash']):
+                        if any(
+                            file_path.endswith(ext)
+                            for ext in [
+                                '.py', '.md', '.txt', '.cpp', '.c', '.h', '.java',
+                                '.js', '.ts', '.html', '.css', '.yml', '.yaml',
+                                '.json', '.xml', '.sh', '.bash'
+                            ]
+                        ):
                             file_change = FileChange(
                                 file_path=file_path,
                                 additions=diff.get("additions", 0),
@@ -181,7 +199,7 @@ class GitLabClient:
                                 diff=diff.get("diff", "")
                             )
                             file_changes.append(file_change)
-                    
+
                     commit = Commit(
                         id=commit_data["id"],
                         title=commit_data["title"],
@@ -192,7 +210,9 @@ class GitLabClient:
                     )
                     commits.append(commit)
                 except Exception as e:
-                    logger.error(f"Failed to fetch diff for commit {commit_data['id']}: {e}")
+                    logger.error(
+                        f"Failed to fetch diff for commit {commit_data['id']}: {e}"
+                    )
         except Exception as e:
             logger.error(f"Failed to fetch commits for tag {tag_name}: {e}")
 
