@@ -25,7 +25,7 @@ COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/pytho
 COPY --from=builder /usr/local/bin /usr/local/bin
 
 # Copy application code
-COPY . .
+# COPY . .
 
 # Create output directory
 RUN mkdir -p output
@@ -40,4 +40,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:8000/health || exit 1
 
 # Set entrypoint
-ENTRYPOINT ["python", "src/main.py"]
+# ENTRYPOINT ["python", "-m", "src.main"]

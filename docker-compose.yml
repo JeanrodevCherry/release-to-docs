@@ -6,10 +6,10 @@ services:
     volumes:
       - ./config:/app/config:ro
       - ./output:/app/output
+      - ./src:/app/src
     environment:
       - GITLAB_TOKEN=${GITLAB_TOKEN}
       - GITLAB_PROJECT_ID=${GITLAB_PROJECT_ID}
     ports:
       - "8000:8000"
-      - "8080:8080"
-    command: ["python", "src/main.py", "v1.0.0"] # Example command
+    command: ["python", "-m", "src.main", "--dry-run", "v1.0.0"]  # Example command

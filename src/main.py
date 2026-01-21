@@ -43,12 +43,13 @@ def load_config(config_path: str) -> Config:
         config_data = yaml.safe_load(f)
 
     # Override with environment variables
-    config_data["gitlab"]["token"] = os.getenv(
-        "GITLAB_TOKEN", config_data["gitlab"]["token"]
-    )
-    config_data["gitlab"]["project_id"] = int(
-        os.getenv("GITLAB_PROJECT_ID", config_data["gitlab"]["project_id"])
-    )
+    gitlab_token = os.getenv("GITLAB_TOKEN")
+    if gitlab_token:
+        config_data["gitlab"]["token"] = gitlab_token
+    
+    gitlab_project_id = os.getenv("GITLAB_PROJECT_ID")
+    if gitlab_project_id:
+        config_data["gitlab"]["project_id"] = int(gitlab_project_id)
 
     return Config(
         gitlab_api_url=config_data["gitlab"]["api_url"],

@@ -1,6 +1,6 @@
 gitlab:
   api_url: "https://gitlab.com/api/v4"
-  project_id: 42324438  # Replace with your project ID
+  project_id: 42324438
   token: "${GITLAB_TOKEN}"  # Use environment variable
   retries: 3
   timeout: 30.0
