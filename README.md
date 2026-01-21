@@ -115,11 +115,25 @@ The project includes GitHub Actions CI/CD pipeline for testing, building, and de
 - **Deploy**: Runs on published releases
   - Deploys to production environment
 
+- **Auto-merge**: Runs on Dependabot pull requests
+  - Automatically approves and merges patch/minor dependency updates
+  - Only affects PRs with `dependencies` and `automated` labels
+
 ### Required Secrets
 
 For Docker Hub publishing, add these secrets to your GitHub repository:
 - `DOCKER_USERNAME`: Your Docker Hub username
 - `DOCKER_PASSWORD`: Your Docker Hub password or access token
+
+### Dependabot Auto-merge
+
+The repository is configured to automatically merge Dependabot pull requests for:
+- **Patch updates** (e.g., `1.2.3` → `1.2.4`)
+- **Minor updates** (e.g., `1.2.3` → `1.3.0`)
+
+**Major updates** require manual review and approval.
+
+This ensures dependencies stay up-to-date while maintaining stability by avoiding breaking changes from major version updates.
 
 ## Project Structure
 

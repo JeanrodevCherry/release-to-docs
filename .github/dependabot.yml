@@ -9,6 +9,9 @@ updates:
       - "JeanrodevCherry"
     assignees:
       - "JeanrodevCherry"
+    labels:
+      - "dependencies"
+      - "automated"
     commit-message:
       prefix: "deps"
       include: "scope"
@@ -18,6 +21,10 @@ updates:
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "github-actions"
+      - "automated"
     commit-message:
       prefix: "ci"
       include: "scope"
