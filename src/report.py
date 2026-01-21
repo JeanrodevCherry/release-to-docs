@@ -3,7 +3,8 @@ from pathlib import Path
 from jinja2 import Environment, FileSystemLoader
 from reportlab.lib.pagesizes import letter
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
-from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib import colors
 import pandas as pd
 from loguru import logger
 from .models import Release, Issue
@@ -44,8 +45,9 @@ class ReportGenerator:
                     "State": issue.state,
                     "Labels": ", ".join(issue.labels),
                     "Assignee": issue.assignee or "Unassigned",
-                    "Created At": issue.created_at,
-                    "Updated At": issue.updated_at,
+                    "Description": issue.description or "",
+                    "Created At": issue.created_at.replace(tzinfo=None),
+                    "Updated At": issue.updated_at.replace(tzinfo=None),
                 }
             )
         df = pd.DataFrame(data)
@@ -57,49 +59,54 @@ class ReportGenerator:
         file_path = self.output_dir / f"release_{release.tag_name}.pdf"
         doc = SimpleDocTemplate(str(file_path), pagesize=letter)
         styles = getSampleStyleSheet()
+        
+        # Custom styles
+        title_style = ParagraphStyle(
+            'Title',
+            parent=styles['Title'],
+            fontSize=18,
+            spaceAfter=30,
+            alignment=1  # Center
+        )
+        heading_style = ParagraphStyle(
+            'Heading',
+            parent=styles['Heading2'],
+            fontSize=14,
+            spaceAfter=12,
+            textColor=colors.darkblue
+        )
+        normal_style = styles['Normal']
+        
         story = []
 
         # Title
-        story.append(Paragraph(f"Release Report: {release.tag_name}", styles["Title"]))
+        story.append(Paragraph(f"Release Report: {release.tag_name}", title_style))
         story.append(Spacer(1, 12))
 
         # Summary
-        story.append(
-            Paragraph(
-                f"Release Date: {release.released_at or release.created_at}",
-                styles["Heading2"],
-            )
-        )
-        story.append(
-            Paragraph(f"Total Issues: {len(release.issues)}", styles["Normal"])
-        )
+        story.append(Paragraph(f"Release Date: {release.released_at or release.created_at}", heading_style))
+        story.append(Paragraph(f"Total Issues: {len(release.issues)}", normal_style))
         story.append(Spacer(1, 12))
 
-        # Issues table
-        data = [["ID", "Title", "State", "Assignee"]]
-        for issue in release.issues:
-            data.append(
-                [
-                    str(issue.id),
-                    issue.title,
-                    issue.state,
-                    issue.assignee or "Unassigned",
-                ]
-            )
-        table = Table(data)
-        table.setStyle(
-            TableStyle(
-                [
-                    ("BACKGROUND", (0, 0), (-1, 0), (0.8, 0.8, 0.8)),
-                    ("TEXTCOLOR", (0, 0), (-1, 0), (0, 0, 0)),
-                    ("ALIGN", (0, 0), (-1, -1), "CENTER"),
-                    ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
-                    ("BORDERS", (0, 0), (-1, -1), 1, (0, 0, 0)),
-                    ("BACKGROUND", (0, 1), (-1, -1), (1, 1, 1)),
-                ]
-            )
-        )
-        story.append(table)
+        # Release Description
+        if release.description:
+            story.append(Paragraph("Release Description", heading_style))
+            story.append(Paragraph(release.description, normal_style))
+            story.append(Spacer(1, 12))
+
+        # Grouped Issues
+        grouped_issues = self.group_issues_by_type(release.issues)
+
+        for issue_type, issues in grouped_issues.items():
+            if issues:
+                story.append(Paragraph(f"{issue_type.capitalize()}s", heading_style))
+                for issue in issues:
+                    story.append(Paragraph(f"#{issue.id}: {issue.title} ({issue.state}) - Assignee: {issue.assignee or 'Unassigned'}", normal_style))
+                    if issue.description:
+                        story.append(Paragraph("Description:", heading_style))
+                        story.append(Paragraph(issue.description, normal_style))
+                    story.append(Spacer(1, 6))
+                story.append(Spacer(1, 12))
 
         doc.build(story)
         return str(file_path)

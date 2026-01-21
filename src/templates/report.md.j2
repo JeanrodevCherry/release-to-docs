@@ -10,16 +10,34 @@
 ### Bugs
 {% for issue in grouped_issues.bug %}
 - #{{ issue.id }}: {{ issue.title }} ({{ issue.state }}) - Assignee: {{ issue.assignee or 'Unassigned' }}
+  {% if issue.description %}
+  **Description:**
+  ```
+  {{ issue.description }}
+  ```
+  {% endif %}
 {% endfor %}
 
 ### Features
 {% for issue in grouped_issues.feature %}
 - #{{ issue.id }}: {{ issue.title }} ({{ issue.state }}) - Assignee: {{ issue.assignee or 'Unassigned' }}
+  {% if issue.description %}
+  **Description:**
+  ```
+  {{ issue.description }}
+  ```
+  {% endif %}
 {% endfor %}
 
 ### Tasks
 {% for issue in grouped_issues.task %}
 - #{{ issue.id }}: {{ issue.title }} ({{ issue.state }}) - Assignee: {{ issue.assignee or 'Unassigned' }}
+  {% if issue.description %}
+  **Description:**
+  ```
+  {{ issue.description }}
+  ```
+  {% endif %}
 {% endfor %}
 
 ## Release Description

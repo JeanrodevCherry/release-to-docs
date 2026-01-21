@@ -1,6 +1,6 @@
 gitlab:
   api_url: "https://gitlab.com/api/v4"
-  project_id: 42324438
+  project_id: 42324438  # GitLab's own public project for testing
   token: "${GITLAB_TOKEN}"  # Use environment variable
   retries: 3
   timeout: 30.0
@@ -14,7 +14,7 @@ report:
 
 logging:
   level: "INFO"
-  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  format: "{time} - {name} - {level} - {message}"
 
 prometheus:
   port: 8000

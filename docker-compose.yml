@@ -12,4 +12,4 @@ services:
       - GITLAB_PROJECT_ID=${GITLAB_PROJECT_ID}
     ports:
       - "8000:8000"
-    command: ["python", "-m", "src.main", "--dry-run", "v1.0.0"]  # Example command
+    command: ["python", "-m", "src.main", "CEREZA_V1.4.2"] # Example command with a known release tag

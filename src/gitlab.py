@@ -76,5 +76,18 @@ class GitLabClient:
             issues=issues,
         )
 
-    async def close(self) -> None:
-        await self.client.aclose()
+    @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10))
+    async def get_related_merge_requests(self, issue_id: int) -> List[Dict[str, Any]]:
+        url = f"{self.api_url}/projects/{self.project_id}/issues/{issue_id}/related_merge_requests"
+        logger.info(f"Fetching related MRs for issue #{issue_id} from {url}")
+        response = await self.client.get(url)
+        response.raise_for_status()
+        return response.json()
+
+    @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10))
+    async def get_merge_request_commits(self, mr_iid: int) -> List[Dict[str, Any]]:
+        url = f"{self.api_url}/projects/{self.project_id}/merge_requests/{mr_iid}/commits"
+        logger.info(f"Fetching commits for MR !{mr_iid} from {url}")
+        response = await self.client.get(url)
+        response.raise_for_status()
+        return response.json()

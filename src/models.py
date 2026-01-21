@@ -3,6 +3,14 @@ from typing import List, Optional
 from datetime import datetime
 
 
+class Commit(BaseModel):
+    id: str
+    title: str
+    message: str
+    author_name: str
+    created_at: datetime
+
+
 class Issue(BaseModel):
     id: int
     title: str
@@ -12,6 +20,7 @@ class Issue(BaseModel):
     assignee: Optional[str]
     created_at: datetime
     updated_at: datetime
+    commits: List[Commit] = []
 
 
 class Release(BaseModel):
