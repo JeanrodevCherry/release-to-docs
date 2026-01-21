@@ -73,7 +73,7 @@ jobs:
       id: meta
       uses: docker/metadata-action@v5
       with:
-        images: ${{ github.repository }}
+        images: ${{ secrets.DOCKER_USERNAME }}/release-to-docs
         tags: |
           type=ref,event=branch
           type=ref,event=pr
