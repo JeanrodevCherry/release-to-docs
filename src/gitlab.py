@@ -50,6 +50,24 @@ class GitLabClient:
         for issue_id in issue_ids:
             try:
                 issue_data = await self.get_issue(issue_id)
+                # Fetch related MRs and their commits
+                commits = []
+                try:
+                    mrs = await self.get_related_merge_requests(issue_id)
+                    for mr in mrs:
+                        mr_commits = await self.get_merge_request_commits(mr["iid"])
+                        for commit_data in mr_commits:
+                            commit = Commit(
+                                id=commit_data["id"],
+                                title=commit_data["title"],
+                                message=commit_data["message"],
+                                author_name=commit_data["author_name"],
+                                created_at=commit_data["created_at"],
+                            )
+                            commits.append(commit)
+                except Exception as e:
+                    logger.warning(f"Failed to fetch commits for issue #{issue_id}: {e}")
+
                 issue = Issue(
                     id=issue_data["id"],
                     title=issue_data["title"],
@@ -63,6 +81,7 @@ class GitLabClient:
                     ),
                     created_at=issue_data["created_at"],
                     updated_at=issue_data["updated_at"],
+                    commits=commits,
                 )
                 issues.append(issue)
             except Exception as e:
