@@ -13,6 +13,22 @@ class MergeRequest(BaseModel):
     source_branch: str
 
 
+class FileChange(BaseModel):
+    file_path: str
+    additions: int
+    deletions: int
+    diff: str
+
+
+class Commit(BaseModel):
+    id: str
+    title: str
+    message: str
+    author_name: str
+    created_at: datetime
+    file_changes: List[FileChange] = []
+
+
 class Issue(BaseModel):
     id: int
     title: str
@@ -32,6 +48,7 @@ class Release(BaseModel):
     created_at: datetime
     released_at: Optional[datetime]
     issues: List[Issue]
+    commits: List[Commit] = []
 
 
 class Config(BaseModel):

@@ -9,4 +9,6 @@ services:
       - .env
     ports:
       - "8000:8000"
-    command: ["python", "-m", "src.main", "$GITLAB_RELEASE_TAG"] # Example command with a known release tag
+    command: >
+      sh -c "echo 'Using release tag: ${GITLAB_RELEASE_TAG}' && python -m src.main $${GITLAB_RELEASE_TAG}"
+    # "echo 'Using release tag: $${GITLAB_RELEASE_TAG}' && python -m src.main $${GITLAB_RELEASE_TAG}"
