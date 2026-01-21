@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Release Report: {{ release.tag_name }}</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        h1, h2 { color: #333; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+    <h1>Release Report: {{ release.tag_name }}</h1>
+    <h2>Summary</h2>
+    <p><strong>Release Name:</strong> {{ release.name or release.tag_name }}</p>
+    <p><strong>Release Date:</strong> {{ release.released_at or release.created_at }}</p>
+    <p><strong>Total Issues:</strong> {{ release.issues | length }}</p>
+
+    <h2>Issues</h2>
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Title</th>
+            <th>State</th>
+            <th>Assignee</th>
+        </tr>
+        {% for issue in release.issues %}
+        <tr>
+            <td>{{ issue.id }}</td>
+            <td>{{ issue.title }}</td>
+            <td>{{ issue.state }}</td>
+            <td>{{ issue.assignee or 'Unassigned' }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <h2>Release Description</h2>
+    <p>{{ release.description or 'No description provided' }}</p>
+</body>
+</html>
