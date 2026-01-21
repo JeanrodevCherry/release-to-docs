@@ -75,3 +75,26 @@
 
 ## Release Description
 {{ release.description or 'No description provided' }}
+
+## Annex: File Changes
+
+This section shows the changes introduced in this release compared to the previous release.
+
+{% for commit in release.commits %}
+### Commit: {{ commit.title }}
+**Author:** {{ commit.author_name }}  
+**Date:** {{ commit.created_at }}  
+**Message:**  
+{{ commit.message }}
+
+{% for change in commit.file_changes %}
+#### File: `{{ change.file_path }}`
+- **Additions:** {{ change.additions }}
+- **Deletions:** {{ change.deletions }}
+
+```diff
+{{ change.diff }}
+```
+
+{% endfor %}
+{% endfor %}

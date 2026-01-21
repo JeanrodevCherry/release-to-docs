@@ -88,16 +88,65 @@ async def test_fetch_release_with_issues(mock_gitlab_client):
         "updated_at": "2023-01-01T00:00:00Z"
     }
 
+    # Mock related MRs
+    mrs_mock = []
+    # Mock releases
+    releases_mock = [
+        {
+            "tag_name": "v1.0.0",
+            "created_at": "2023-01-01T00:00:00Z"
+        },
+        {
+            "tag_name": "v0.9.0", 
+            "created_at": "2022-12-01T00:00:00Z"
+        }
+    ]
+    # Mock compare data
+    compare_mock = {
+        "commits": [
+            {
+                "id": "abc123",
+                "title": "Fix bug",
+                "message": "Fix bug\n\nDetailed message",
+                "author_name": "John Doe",
+                "created_at": "2023-01-01T00:00:00Z"
+            }
+        ]
+    }
+    # Mock diff
+    diff_mock = [
+        {
+            "new_path": "src/main.py",
+            "additions": 5,
+            "deletions": 2,
+            "diff": "@@ -1,3 +1,6 @@\n+new line\n old line\n-old line2\n+modified line"
+        }
+    ]
+
     release_resp = Mock()
     release_resp.raise_for_status = Mock()
     release_resp.json = Mock(return_value=release_mock)
     issue_resp = Mock()
     issue_resp.raise_for_status = Mock()
     issue_resp.json = Mock(return_value=issue_mock)
+    mrs_resp = Mock()
+    mrs_resp.raise_for_status = Mock()
+    mrs_resp.json = Mock(return_value=mrs_mock)
+    releases_resp = Mock()
+    releases_resp.raise_for_status = Mock()
+    releases_resp.json = Mock(return_value=releases_mock)
+    compare_resp = Mock()
+    compare_resp.raise_for_status = Mock()
+    compare_resp.json = Mock(return_value=compare_mock)
+    diff_resp = Mock()
+    diff_resp.raise_for_status = Mock()
+    diff_resp.json = Mock(return_value=diff_mock)
 
-    mock_gitlab_client.client.get = AsyncMock(side_effect=[release_resp, issue_resp])
+    mock_gitlab_client.client.get = AsyncMock(side_effect=[release_resp, issue_resp, mrs_resp, releases_resp, compare_resp, diff_resp])
 
     release = await mock_gitlab_client.fetch_release_with_issues("v1.0.0")
     assert release.tag_name == "v1.0.0"
     assert len(release.issues) == 1
     assert release.issues[0].id == 123
+    assert len(release.commits) == 1
+    assert release.commits[0].id == "abc123"

@@ -1,5 +1,10 @@
 # GitLab Release Reporter
 
+[![CI](https://github.com/jpeiteado/release-to-docs/workflows/CI/CD%20Pipeline/badge.svg)](https://github.com/jpeiteado/release-to-docs/actions)
+[![codecov](https://codecov.io/gh/jpeiteado/release-to-docs/branch/main/graph/badge.svg)](https://codecov.io/gh/jpeiteado/release-to-docs)
+[![Python Version](https://img.shields.io/badge/python-3.11+-blue.svg)](https://python.org)
+[![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=flat&logo=docker&logoColor=white)](https://docker.com)
+
 A Dockerized Python application that fetches GitLab release data, extracts linked issues, and generates structured reports in PDF, Excel, and Markdown formats.
 
 ## Features
@@ -11,18 +16,18 @@ A Dockerized Python application that fetches GitLab release data, extracts linke
 - **Production-Ready**: Includes unit tests, linting, Docker, and CI/CD
 
 ## Installation
-
+<!-- 
 ### Using Docker
 
 ```bash
 docker build -t gitlab-reporter .
 docker run -e GITLAB_TOKEN=your_token -e GITLAB_PROJECT_ID=123 gitlab-reporter v1.0.0
-```
+``` -->
 
 ### Using Docker Compose
 
 ```bash
-docker-compose up
+docker-compose up --build
 ```
 
 ### Local Development
@@ -31,7 +36,17 @@ docker-compose up
 pip install poetry
 poetry install
 poetry run python src/main.py v1.0.0
+## Environment Setup
+
+Create a `.env` file in the root directory with the following variables:
+
+```env
+GITLAB_TOKEN="your_gitlab_token_here"
+GITLAB_PROJECT_ID=your_project_id_here
+GITLAB_RELEASE_TAG="your_release_tag_here"
 ```
+
+Replace the placeholders with your actual GitLab token, project ID, and release tag.
 
 ## Configuration
 
@@ -83,7 +98,28 @@ pre-commit run --all-files
 
 ## CI/CD
 
-The project includes GitLab CI/CD pipeline for testing, building, and deploying Docker images.
+The project includes GitHub Actions CI/CD pipeline for testing, building, and deploying Docker images.
+
+### Workflows
+
+- **Test**: Runs on every push and pull request to `main` and `develop` branches
+  - Unit tests with coverage reporting
+  - Code linting with flake8
+  - Type checking with mypy
+  - Coverage upload to Codecov
+
+- **Build & Push**: Runs on pushes to `main` branch and releases
+  - Builds Docker image
+  - Pushes to Docker Hub with appropriate tags
+
+- **Deploy**: Runs on published releases
+  - Deploys to production environment
+
+### Required Secrets
+
+For Docker Hub publishing, add these secrets to your GitHub repository:
+- `DOCKER_USERNAME`: Your Docker Hub username
+- `DOCKER_PASSWORD`: Your Docker Hub password or access token
 
 ## Project Structure
 
