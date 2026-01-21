@@ -11,18 +11,18 @@ A Dockerized Python application that fetches GitLab release data, extracts linke
 - **Production-Ready**: Includes unit tests, linting, Docker, and CI/CD
 
 ## Installation
-
+<!-- 
 ### Using Docker
 
 ```bash
 docker build -t gitlab-reporter .
 docker run -e GITLAB_TOKEN=your_token -e GITLAB_PROJECT_ID=123 gitlab-reporter v1.0.0
-```
+``` -->
 
 ### Using Docker Compose
 
 ```bash
-docker-compose up
+docker-compose up --build
 ```
 
 ### Local Development
@@ -31,7 +31,17 @@ docker-compose up
 pip install poetry
 poetry install
 poetry run python src/main.py v1.0.0
+## Environment Setup
+
+Create a `.env` file in the root directory with the following variables:
+
+```env
+GITLAB_TOKEN="your_gitlab_token_here"
+GITLAB_PROJECT_ID=your_project_id_here
+GITLAB_RELEASE_TAG="your_release_tag_here"
 ```
+
+Replace the placeholders with your actual GitLab token, project ID, and release tag.
 
 ## Configuration
 
