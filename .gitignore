@@ -2,4 +2,4 @@
 /venv/*
 **__py_cache__**
 .venv
-/output/*
+output/*
