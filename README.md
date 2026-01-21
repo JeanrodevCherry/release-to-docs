@@ -1,5 +1,10 @@
 # GitLab Release Reporter
 
+[![CI](https://github.com/jpeiteado/release-to-docs/workflows/CI/CD%20Pipeline/badge.svg)](https://github.com/jpeiteado/release-to-docs/actions)
+[![codecov](https://codecov.io/gh/jpeiteado/release-to-docs/branch/main/graph/badge.svg)](https://codecov.io/gh/jpeiteado/release-to-docs)
+[![Python Version](https://img.shields.io/badge/python-3.11+-blue.svg)](https://python.org)
+[![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=flat&logo=docker&logoColor=white)](https://docker.com)
+
 A Dockerized Python application that fetches GitLab release data, extracts linked issues, and generates structured reports in PDF, Excel, and Markdown formats.
 
 ## Features
@@ -93,7 +98,28 @@ pre-commit run --all-files
 
 ## CI/CD
 
-The project includes GitLab CI/CD pipeline for testing, building, and deploying Docker images.
+The project includes GitHub Actions CI/CD pipeline for testing, building, and deploying Docker images.
+
+### Workflows
+
+- **Test**: Runs on every push and pull request to `main` and `develop` branches
+  - Unit tests with coverage reporting
+  - Code linting with flake8
+  - Type checking with mypy
+  - Coverage upload to Codecov
+
+- **Build & Push**: Runs on pushes to `main` branch and releases
+  - Builds Docker image
+  - Pushes to Docker Hub with appropriate tags
+
+- **Deploy**: Runs on published releases
+  - Deploys to production environment
+
+### Required Secrets
+
+For Docker Hub publishing, add these secrets to your GitHub repository:
+- `DOCKER_USERNAME`: Your Docker Hub username
+- `DOCKER_PASSWORD`: Your Docker Hub password or access token
 
 ## Project Structure
 
